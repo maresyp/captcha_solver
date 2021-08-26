@@ -6,7 +6,7 @@ class TemplateMatcher:
     __last_needle_size: tuple[int, int] = (0, 0)  # (width, height)
 
     def __init__(self, haystack: str):
-        """ Load files """
+        """ Load haystack image for further processing """
         self.haystack = cv2.imread(haystack, cv2.IMREAD_UNCHANGED)
         if self.haystack is None:
             raise FileNotFoundError(f"File '{haystack}' does not exist")

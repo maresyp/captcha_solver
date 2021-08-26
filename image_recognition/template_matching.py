@@ -3,7 +3,7 @@ import cv2
 
 
 class TemplateMatcher:
-    last_needle_size: tuple[int, int] = (0, 0)  # (width, height)
+    __last_needle_size: tuple[int, int] = (0, 0)  # (width, height)
 
     def __init__(self, haystack: str):
         """ Load files """
@@ -20,7 +20,7 @@ class TemplateMatcher:
         if needle is None:
             raise FileNotFoundError(f"File '{needle}' does not exist")
 
-        self.last_needle_size = (needle.shape[1], needle.shape[0])
+        self.__last_needle_size = (needle.shape[1], needle.shape[0])
 
         _, max_val, _, max_loc = cv2.minMaxLoc(
             cv2.matchTemplate(self.haystack, needle, method)
@@ -29,7 +29,7 @@ class TemplateMatcher:
 
     def match_multiple(self, needle: str, method=cv2.TM_CCOEFF_NORMED) -> tuple[float, tuple[int, int]]:
         pass
-    
+
     def draw_rectangle(self, max_loc: tuple[int, int], size: tuple[int, int] = None):
         """
         TODO: fix this docstring
@@ -37,7 +37,7 @@ class TemplateMatcher:
         If size is not specified use last used size of needle
         """
         if size is None:
-            size = self.last_needle_size
+            size = self.__last_needle_size
         cpy = self.haystack.copy()
         cv2.rectangle(
             cpy,
@@ -51,9 +51,8 @@ class TemplateMatcher:
 
 
 if __name__ == '__main__':
-    x = TemplateMatcher('../test_files/hard/haystack.jpg')
-    print(x.match_one('../test_files/hard/needle_1.jpg'))
-    print(x.match_one('../test_files/hard/needle_2.jpg'))
-    ret = x.match_one('../test_files/hard/needle_3.jpg')
+    x = TemplateMatcher('../test_files/easy/sample_1/hay.jpg')
+    print(x.match_one('../test_files/easy/sample_1/needle_2.jpg'))
+    ret = x.match_one('../test_files/easy/sample_1/needle_1.jpg')
     print(ret)
     x.draw_rectangle(ret[1])

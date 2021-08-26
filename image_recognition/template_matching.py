@@ -3,37 +3,54 @@ import cv2
 
 
 class TemplateMatcher:
-    def __init__(self, haystack: str, needle: str):
+    last_needle_size: tuple[int, int] = (0, 0)  # (width, height)
+
+    def __init__(self, haystack: str):
         """ Load files """
         self.haystack = cv2.imread(haystack, cv2.IMREAD_UNCHANGED)
         if self.haystack is None:
             raise FileNotFoundError(f"File '{haystack}' does not exist")
-        self.needle = cv2.imread(needle, cv2.IMREAD_UNCHANGED)
-        if self.needle is None:
-            raise FileNotFoundError(f"File '{needle}' does not exist")
 
     def __str__(self):
-        return f'{self.__class__.__name__} for {self.needle} in {self.haystack}'
+        return f'{self.__class__.__name__} for {self.haystack}'
 
-    def match(self, method=cv2.TM_CCOEFF_NORMED) -> tuple[float, tuple[int, int]]:
-        """ Try to find matching needle in haystack """
+    def match(self, needle: str, method=cv2.TM_CCOEFF_NORMED) -> tuple[float, tuple[int, int]]:
+        """ Try to find matching needle in haystack using given method """
+        needle = cv2.imread(needle, cv2.IMREAD_UNCHANGED)
+        if needle is None:
+            raise FileNotFoundError(f"File '{needle}' does not exist")
+
+        self.last_needle_size = (needle.shape[1], needle.shape[0])
+
         _, max_val, _, max_loc = cv2.minMaxLoc(
-            cv2.matchTemplate(self.haystack, self.needle, method)
+            cv2.matchTemplate(self.haystack, needle, method)
         )
         return max_val, max_loc
 
-    def draw_rectangle(self, max_loc: tuple[int, int]):
-        """ Draw rectangle of needle size at given max_loc"""
-        width = self.needle.shape[1]
-        height = self.needle.shape[0]
+    def draw_rectangle(self, max_loc: tuple[int, int], size: tuple[int, int] = None):
+        """
+        TODO: fix this docstring
+        Draw rectangle of needle size(x, y) at given max_loc
+        If size is not specified use last used size of needle
+        """
+        if size is None:
+            size = self.last_needle_size
+        cpy = self.haystack.copy()
         cv2.rectangle(
-            self.haystack,
+            cpy,
             max_loc,
-            (max_loc[0] + width, max_loc[1] + height),
+            (max_loc[0] + size[0], max_loc[1] + size[1]),
             (0, 255, 255),
             2
         )
+        cv2.imshow('Match', cpy)
+        cv2.waitKey()
 
 
 if __name__ == '__main__':
-    TemplateMatcher('', '').match()
+    x = TemplateMatcher('../test_files/hard/haystack.jpg')
+    print(x.match('../test_files/hard/needle_1.jpg'))
+    print(x.match('../test_files/hard/needle_2.jpg'))
+    ret = x.match('../test_files/hard/needle_3.jpg')
+    print(ret)
+    x.draw_rectangle(ret[1])

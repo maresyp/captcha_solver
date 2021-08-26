@@ -14,7 +14,7 @@ class TemplateMatcher:
     def __str__(self):
         return f'{self.__class__.__name__} for {self.haystack}'
 
-    def match(self, needle: str, method=cv2.TM_CCOEFF_NORMED) -> tuple[float, tuple[int, int]]:
+    def match_one(self, needle: str, method=cv2.TM_CCOEFF_NORMED) -> tuple[float, tuple[int, int]]:
         """ Try to find matching needle in haystack using given method """
         needle = cv2.imread(needle, cv2.IMREAD_UNCHANGED)
         if needle is None:
@@ -27,6 +27,9 @@ class TemplateMatcher:
         )
         return max_val, max_loc
 
+    def match_multiple(self, needle: str, method=cv2.TM_CCOEFF_NORMED) -> tuple[float, tuple[int, int]]:
+        pass
+    
     def draw_rectangle(self, max_loc: tuple[int, int], size: tuple[int, int] = None):
         """
         TODO: fix this docstring
@@ -49,8 +52,8 @@ class TemplateMatcher:
 
 if __name__ == '__main__':
     x = TemplateMatcher('../test_files/hard/haystack.jpg')
-    print(x.match('../test_files/hard/needle_1.jpg'))
-    print(x.match('../test_files/hard/needle_2.jpg'))
-    ret = x.match('../test_files/hard/needle_3.jpg')
+    print(x.match_one('../test_files/hard/needle_1.jpg'))
+    print(x.match_one('../test_files/hard/needle_2.jpg'))
+    ret = x.match_one('../test_files/hard/needle_3.jpg')
     print(ret)
     x.draw_rectangle(ret[1])

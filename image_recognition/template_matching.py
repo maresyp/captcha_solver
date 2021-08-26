@@ -4,6 +4,7 @@ import cv2
 
 class TemplateMatcher:
     __last_needle_size: tuple[int, int] = (0, 0)  # (width, height)
+    __MATCHING_METHOD = cv2.TM_CCOEFF_NORMED
 
     def __init__(self, haystack: str):
         """ Load haystack image for further processing """
@@ -14,7 +15,7 @@ class TemplateMatcher:
     def __str__(self):
         return f'{self.__class__.__name__} for {self.haystack}'
 
-    def match_one(self, needle: str, method=cv2.TM_CCOEFF_NORMED) -> tuple[float, tuple[int, int]]:
+    def match_one(self, needle: str) -> tuple[float, tuple[int, int]]:
         """ Try to find matching needle in haystack using given method """
         needle = cv2.imread(needle, cv2.IMREAD_UNCHANGED)
         if needle is None:
@@ -23,11 +24,11 @@ class TemplateMatcher:
         self.__last_needle_size = (needle.shape[1], needle.shape[0])
 
         _, max_val, _, max_loc = cv2.minMaxLoc(
-            cv2.matchTemplate(self.haystack, needle, method)
+            cv2.matchTemplate(self.haystack, needle, self.__MATCHING_METHOD)
         )
         return max_val, max_loc
 
-    def match_multiple(self, needle: str, method=cv2.TM_CCOEFF_NORMED) -> tuple[float, tuple[int, int]]:
+    def match_multiple(self, needle: str) -> tuple[float, tuple[int, int]]:
         pass
 
     def draw_rectangle(self, max_loc: tuple[int, int], size: tuple[int, int] = None):

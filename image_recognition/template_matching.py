@@ -1,4 +1,4 @@
-import numpy as np
+from typing import Optional
 import cv2
 
 
@@ -15,7 +15,8 @@ class TemplateMatcher:
     def __str__(self):
         return f'{self.__class__.__name__} for {self.haystack}'
 
-    def match_one(self, needle: str) -> tuple[float, tuple[int, int]]:
+    def match_one(self, needle: str, threshold: float) -> Optional[tuple[float, tuple[int, int]]]:
+        # TODO: change docstring
         """ Try to find matching needle in haystack using given method """
         needle = cv2.imread(needle, cv2.IMREAD_UNCHANGED)
         if needle is None:
@@ -26,12 +27,13 @@ class TemplateMatcher:
         _, max_val, _, max_loc = cv2.minMaxLoc(
             cv2.matchTemplate(self.haystack, needle, self.__MATCHING_METHOD)
         )
-        return max_val, max_loc
+        return (max_val, max_loc) if max_val >= threshold else None
 
-    def match_multiple(self, needle: str) -> tuple[float, tuple[int, int]]:
-        pass
+    def match_multiple(self, needle: str, amount: int, threshold: float) -> \
+            Optional[list[tuple[float, tuple[int, int]]]]:
+        return None
 
-    def draw_rectangle(self, max_loc: tuple[int, int], size: tuple[int, int] = None):
+    def draw_rectangle(self, loc: tuple[int, int], size: tuple[int, int] = None) -> None:
         """
         TODO: fix this docstring
         Draw rectangle of needle size(x, y) at given max_loc
@@ -42,8 +44,8 @@ class TemplateMatcher:
         cpy = self.haystack.copy()
         cv2.rectangle(
             cpy,
-            max_loc,
-            (max_loc[0] + size[0], max_loc[1] + size[1]),
+            loc,
+            (loc[0] + size[0], loc[1] + size[1]),
             (0, 255, 255),
             2
         )
@@ -53,7 +55,8 @@ class TemplateMatcher:
 
 if __name__ == '__main__':
     x = TemplateMatcher('../test_files/easy/sample_1/hay.jpg')
-    print(x.match_one('../test_files/easy/sample_1/needle_2.jpg'))
-    ret = x.match_one('../test_files/easy/sample_1/needle_1.jpg')
+    print(x.match_one('../test_files/easy/sample_1/needle_2.jpg', .9))
+    ret = x.match_one('../test_files/easy/sample_1/needle_1.jpg', .9)
     print(ret)
     x.draw_rectangle(ret[1])
+    cv2.VideoCapture()

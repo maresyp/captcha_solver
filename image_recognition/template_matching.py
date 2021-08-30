@@ -13,7 +13,7 @@ class TemplateMatcher:
         return f'{self.__class__.__name__} for {self.haystack}'
 
     def match_one(self, needle: np.ndarray, threshold: float) -> Optional[tuple[float, tuple[int, int]]]:
-        """ Try to find matching needle in haystack using given method """
+        """ Try to find matching needle in haystack """
 
         _, max_val, _, max_loc = cv2.minMaxLoc(
             cv2.matchTemplate(self.haystack, needle, self.__MATCHING_METHOD)

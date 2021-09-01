@@ -31,16 +31,3 @@ class TemplateMatcher(Matcher):
             rectangles.append(rect)
         rectangles, _ = cv.groupRectangles(rectangles, 1, 0.5)
         return rectangles if len(rectangles) else None
-
-
-if __name__ == '__main__':
-    from utils import read_image
-
-    tm = TemplateMatcher(read_image('../test_files/easy/sample_multiple/haystack.jpg'))
-    x = tm.match_multiple(read_image('../test_files/easy/sample_multiple/needle.jpg'), .5)
-    print(type(x))
-    for re in x:
-        print(re)
-        tm.draw_rectangle(re)
-    tm.show()
-# tm.draw_rectangle(x[1], (50, 50))

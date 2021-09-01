@@ -1,12 +1,13 @@
 from typing import Optional
 import cv2 as cv
 import numpy as np
-from matcher import Matcher
+from .matcher import Matcher
 
 
 class TemplateMatcher(Matcher):
     __MATCHING_METHOD = cv.TM_CCOEFF_NORMED
 
+    # TODO: rewrite this
     def match_one(self, needle: np.ndarray, threshold: float) -> Optional[tuple[float, tuple[int, int]]]:
         """ Try to find matching needle in haystack """
 
@@ -15,7 +16,7 @@ class TemplateMatcher(Matcher):
         )
         return max_val, max_loc if max_val >= threshold else None
 
-    def match_multiple(self, needle: np.ndarray, threshold: float) -> Optional[np.ndarray]:
+    def match_multiple(self, needle: np.ndarray, threshold: float, max_results=10) -> Optional[np.ndarray]:
         """
         Search for needles in haystack \n
         returns array of rectangles around found objects
@@ -23,6 +24,8 @@ class TemplateMatcher(Matcher):
         """
         match_result: np.ndarray = cv.matchTemplate(self.haystack, needle, self.__MATCHING_METHOD)
         locations: list[tuple] = list(zip(*np.where(match_result >= threshold)[::-1]))
+        if not locations: return None
+
         # rect -> [x, y, width, height]
         rectangles = []
         for loc in locations:
@@ -30,4 +33,4 @@ class TemplateMatcher(Matcher):
             rectangles.append(rect)
             rectangles.append(rect)
         rectangles, _ = cv.groupRectangles(rectangles, 1, 0.5)
-        return rectangles if len(rectangles) else None
+        return rectangles[:max_results] if len(rectangles) else None

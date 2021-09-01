@@ -13,8 +13,8 @@ class Matcher:
 
     def draw_rectangle(self, rectangle: list[int, int, int, int]) -> None:
         """ Draw rectangle """
-        for x, y, width, height in rectangle:
-            cv.rectangle(self.haystack, (x, y), (x + width, y + height), (0, 255, 0), 2)
+        x, y, width, height = rectangle
+        cv.rectangle(self.haystack, (x, y), (x + width, y + height), (0, 255, 0), 2)
 
     def show(self) -> None:
         """ Show haystack and wait for key """

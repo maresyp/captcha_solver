@@ -5,4 +5,8 @@ out
 gen
 
 # Other
-!/test_files/
+/test_files/
+.DS_Store
+.vscode/
+venv/
+__pycache__/

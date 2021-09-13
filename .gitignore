@@ -5,10 +5,10 @@ out
 gen
 
 # Other
-/test_files/
 .DS_Store
 .vscode/
 venv/
 __pycache__/
 __init__.pyc
 __init__.py
+image_recognition/tests_image_recognition/test_files/
